@@ -41,15 +41,6 @@ This mode focuses on:
 * Distinguishing traffic-driven vs configuration-driven incidents
 * Preventing recurrence without overcorrecting
 
-### General triggers
-
-Apply this skill when the task involves:
-
-* Tuning HPA scale-up **and** scale-down behavior for cost efficiency
-* Reducing idle cluster capacity without breaking burst handling
-* Understanding why replicas or nodes do not scale down even when usage is low
-* Aligning HPA, scheduler, and cluster autoscaler behavior
-
 This skill assumes **Datadog** for observability and standard Kubernetes HPA + Cluster Autoscaler.
 
 ## Core mental model
@@ -64,48 +55,9 @@ Kubernetes scaling is a **three-layer system**:
 
 Key takeaway: HPA decides *quantity*, scheduler decides *placement*, autoscaler decides *cost*. Scale-up can be aggressive; scale-down must be **possible**. If replicas drop but nodes do not, the scheduler is the bottleneck.
 
-## HPA fundamentals
-
-HPA resource utilization is computed against **requests**, not node capacity:
-
-* CPU signal: `pod cpu usage / pod cpu requests`
-* Memory signal: `pod memory usage / pod memory requests`
-
-Scheduler placement is also request-based, not live-usage-based.
-
 ## Datadog formulas
 
-### CPU used % of cluster capacity (real utilization)
-
-```text
-a = sum:kubernetes.cpu.usage.total{kube_cluster_name:$cluster.value}.rollup(avg,300)
-b = sum:kubernetes_state.node.cpu_allocatable.total{kube_cluster_name:$cluster.value}
-f = ((a / 1e9) / b) * 100
-```
-
-Apply `reduce` on `f`: `avg` for typical utilization, `max` for the worst 5-minute window.
-
-### CPU requested % of cluster capacity (reserved on paper)
-
-```text
-a = sum:kubernetes.cpu.requests{kube_cluster_name:$cluster.value}
-b = sum:kubernetes_state.node.cpu_allocatable.total{kube_cluster_name:$cluster.value}
-f = (a / b) * 100
-```
-
-Apply `a` reduce = `avg` for typical reservation (or `last` for current), `b` reduce = `last`.
-
-> This metric **must go down after scale-down** for cost savings to be real.
-
-### Memory utilization vs requests (HPA-relevant)
-
-```text
-a = sum:kubernetes.memory.usage{kube_cluster_name:$cluster.value,kube_namespace:$namespace,kube_deployment:$deployment}
-b = sum:kubernetes.memory.requests{kube_cluster_name:$cluster.value,kube_namespace:$namespace,kube_deployment:$deployment}
-f = (a / b) * 100
-```
-
-If `f` stays above target, memory drives scale-up even when CPU is idle.
+For CPU utilization, CPU reservation, and memory utilization queries, see [references/datadog-formulas.md](references/datadog-formulas.md).
 
 ## Scale-down as a first-class cost control
 
