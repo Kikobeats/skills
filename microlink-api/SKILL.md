@@ -1,254 +1,137 @@
 ---
 name: microlink-api
-description: Interact with Microlink API and MQL for metadata extraction, screenshots, PDFs, web scraping, and browser automation. Use when the user mentions Microlink, MQL, @microlink/mql, web scraping with CSS selectors, taking website screenshots, generating PDFs from URLs, extracting metadata from links, or embedding link previews.
+description: Uses Microlink API and MQL to extract metadata, screenshots, PDFs, and custom scraped data from URLs. Use when users mention Microlink, MQL, @microlink/mql, URL metadata extraction, screenshot or PDF generation from links, CSS selector scraping, or embed-based link previews.
 ---
 
 # Microlink API
 
-Microlink API automates browser actions via HTTP GET. Given a URL, it returns structured data (metadata, screenshots, PDFs, scraped content).
+Microlink turns a URL into structured output over HTTP. It can return metadata, media assets, scraped content, and browser-rendered results.
 
-## Endpoints
+## Quick Start
 
-- **Free**: `https://api.microlink.io` — unauthenticated, 50 reqs/day
-- **Pro**: `https://pro.microlink.io` — authenticated via `x-api-key` header, starts at 14,000 reqs/month
+### 1) Pick endpoint
 
-Query parameters support both camelCase and snake_case.
+- Free endpoint: `https://api.microlink.io` (no auth, 50 requests/day)
+- Pro endpoint: `https://pro.microlink.io` (requires `x-api-key` header)
 
-## Authentication
-
-Pass API key as `x-api-key` request header. Verify with `x-pricing-plan: pro` in response headers.
-
-Never expose API keys in client-side code. Use [proxy](https://github.com/microlinkhq/proxy) or [edge-proxy](https://github.com/microlinkhq/edge-proxy) for frontend usage.
-
-## Response Format (JSend)
-
-```json
-{
-  "status": "success",
-  "data": { "title": "...", "description": "...", "image": { "url": "...", "width": 1280, "height": 720, "type": "jpg", "size": 120116, "size_pretty": "120 kB" }, "url": "..." },
-  "message": "optional error message",
-  "more": "optional docs link"
-}
-```
-
-Status values: `'success'` (2xx), `'fail'` (4xx), `'error'` (5xx).
-
-## Default Data Fields
-
-Extracted automatically from any URL: `title`, `description`, `author`, `publisher`, `date` (ISO 8601), `lang` (ISO 639-1), `url`, `image`, `video`, `logo`.
-
-Media fields include: `width`, `height`, `type`, `size`, `size_pretty`. Playable media adds `duration`, `duration_pretty`.
-
-Additional HTTP info: `statusCode`, `headers`, `redirects`.
-
-## Core Parameters
-
-| Parameter    | Type           | Default      | Pro | Description                                                       |
-| ------------ | -------------- | ------------ | --- | ----------------------------------------------------------------- |
-| `url`        | string         | **required** |     | Target URL (must include protocol)                                |
-| `screenshot` | boolean        | false        |     | Generate screenshot                                               |
-| `pdf`        | boolean        | false        |     | Generate PDF                                                      |
-| `video`      | boolean        | false        |     | Detect video sources                                              |
-| `audio`      | boolean        | false        |     | Detect audio sources                                              |
-| `meta`       | boolean/object | true         |     | Metadata extraction (disable with `false` to speed up)            |
-| `data`       | object         |              |     | Custom scraping rules (CSS selectors)                             |
-| `embed`      | string         |              |     | Return specific field as response body (e.g., `'screenshot.url'`) |
-| `filter`     | string         |              |     | Comma-separated fields to pick from response                      |
-| `prerender`  | boolean/string | 'auto'       |     | Headless browser: `true`, `false`, or `'auto'`                    |
-| `iframe`     | boolean/object | false        |     | oEmbed detection                                                  |
-| `insights`   | boolean/object | false        |     | Lighthouse + Wappalyzer tech detection                            |
-| `palette`    | boolean        | false        |     | Color palette extraction                                          |
-| `function`   | string         |              |     | Execute JS with Puppeteer page access                             |
-
-## Screenshot Options
-
-| Parameter                   | Type    | Default     | Description                                                                                        |
-| --------------------------- | ------- | ----------- | -------------------------------------------------------------------------------------------------- |
-| `screenshot.element`        | string  |             | CSS selector to capture specific element                                                           |
-| `screenshot.fullPage`       | boolean | false       | Full scrollable page                                                                               |
-| `screenshot.type`           | string  | 'png'       | `'jpeg'` or `'png'`                                                                                |
-| `screenshot.omitBackground` | boolean | false       | Transparent background                                                                             |
-| `screenshot.overlay`        | object  |             | Browser chrome overlay (`browser`: `'light'`/`'dark'`, `background`: CSS gradient/color/image URL) |
-| `screenshot.codeScheme`     | string  | 'atom-dark' | Syntax highlighting theme                                                                          |
-
-## PDF Options
-
-| Parameter        | Type          | Default | Description                            |
-| ---------------- | ------------- | ------- | -------------------------------------- |
-| `pdf.format`     | string        |         | Page format (e.g., `'A4'`, `'Letter'`) |
-| `pdf.landscape`  | boolean       | false   | Landscape orientation                  |
-| `pdf.scale`      | number        |         | Scale factor                           |
-| `pdf.margin`     | string/object |         | Page margins                           |
-| `pdf.pageRanges` | string        |         | Pages to print (e.g., `'1-3'`)         |
-
-## Browser Control
-
-| Parameter         | Type            | Default          | Description                                                        |
-| ----------------- | --------------- | ---------------- | ------------------------------------------------------------------ |
-| `device`          | string          | 'macbook pro 13' | Device emulation (e.g., `'iPad'`, `'iPhone X'`)                    |
-| `viewport`        | object          |                  | `{ width, height, deviceScaleFactor, isMobile }`                   |
-| `colorScheme`     | string          | 'no-preference'  | `'light'` or `'dark'`                                              |
-| `javascript`      | boolean         | true             | Enable/disable JS execution                                        |
-| `animations`      | boolean         | false            | Enable CSS animations                                              |
-| `mediaType`       | string          | 'screen'         | `'screen'` or `'print'`                                            |
-| `click`           | string/string[] |                  | CSS selector(s) to click                                           |
-| `scroll`          | string          |                  | CSS selector to scroll to                                          |
-| `scripts`         | string/string[] |                  | Inject `<script>` (inline code or URL)                             |
-| `modules`         | string/string[] |                  | Inject `<script type="module">`                                    |
-| `styles`          | string/string[] |                  | Inject `<style>` (inline CSS or URL)                               |
-| `waitUntil`       | string/string[] | 'auto'           | `'load'`, `'domcontentloaded'`, `'networkidle0'`, `'networkidle2'` |
-| `waitForSelector` | string          |                  | Wait for CSS selector                                              |
-| `waitForTimeout`  | string/number   |                  | Wait duration (e.g., `'3s'`, `3000`)                               |
-| `timeout`         | string/number   | 28s              | Max request lifecycle                                              |
-
-## Cache Control
-
-| Parameter  | Type                  | Default | Pro | Description                                                      |
-| ---------- | --------------------- | ------- | --- | ---------------------------------------------------------------- |
-| `ttl`      | string/number         | '24h'   | yes | Cache lifetime (1m to 31d). Formats: `'1d'`, `'24h'`, `86400000` |
-| `staleTtl` | string/number/boolean | false   | yes | Serve stale while revalidating. `staleTtl=0` always revalidates  |
-| `force`    | boolean               | false   |     | Bypass cache, get fresh copy                                     |
-
-Cache headers: `x-cache-status` (`HIT`/`MISS`/`BYPASS`), `x-cache-ttl`.
-
-## Pro-Only Parameters
-
-`headers`, `proxy`, `ttl`, `staleTtl`, `filename` require a Pro plan.
-
-- `headers`: Custom HTTP headers. Use `x-api-header-*` prefix for sensitive headers
-- `proxy`: Custom proxy URL or automatic proxy resolution for anti-bot bypass
-- `filename`: Custom name for generated screenshot/PDF assets
-
-## Embed Pattern
-
-Use `embed` to serve assets directly (no JSON wrapper):
-
-```html
-<img src="https://api.microlink.io/?url=https://example.com&screenshot=true&meta=false&embed=screenshot.url">
-```
-
-Common embed fields: `screenshot.url`, `pdf.url`, `image.url`, `logo.url`, `video.url`.
-
-## function Parameter
-
-Execute custom JS with Puppeteer access. Receives `{ page, html, response }` plus any query params:
-
-```js
-const { data } = await mql('https://example.com', {
-  function: '({ page }) => page.evaluate("document.title")',
-  meta: false
-})
-console.log(data.function)
-```
-
-Supports compression (`lz#`, `gz#`, `br#` prefixes) and NPM packages: `cheerio`, `lodash`, `got`, `jsdom`, `@mozilla/readability`, `ioredis`, `@aws-sdk/client-s3`, `youtube-dl-exec`, and others.
-
-## Error Codes
-
-| Code          | Cause                              |
-| ------------- | ---------------------------------- |
-| EAUTH         | Invalid API key                    |
-| ERATE         | Daily rate limit reached           |
-| EINVALURL     | Invalid URL format                 |
-| EBRWSRTIMEOUT | Browser navigation timeout         |
-| EFATAL        | Generic resolution failure         |
-| EPRO          | Auth request sent to free endpoint |
-| ETIMEOUT      | Request timeout exceeded           |
-
-For complete details, see [api-reference.md](api-reference.md).
-
----
-
-## MQL (Microlink Query Language)
-
-MQL is the official Node.js/browser HTTP client for Microlink API (`@microlink/mql`).
-
-### Installation
-
-```bash
-npm install @microlink/mql --save
-```
-
-### Environments
-
-- **Node.js**: `const mql = require('@microlink/mql')`
-- **Edge/WinterCG**: `import mql from '@microlink/mql/lightweight'`
-- **Browser**: `import mql from 'https://esm.sh/@microlink/mql'`
-
-### Basic Usage
+### 2) Build a minimal request
 
 ```js
 const mql = require('@microlink/mql')
 const { status, data, response } = await mql('https://example.com')
 ```
 
-### API Signature
+### 3) Add only needed options
 
-```
-mql(url, [options], [httpOptions])
-```
+- Metadata only: default `meta: true`
+- Faster screenshot/PDF requests: set `meta: false`
+- Reduce payload: use `filter` (example: `'url,title,image.url'`)
 
-- `url`: Target URL (required)
-- `options`: Any Microlink API parameter + `apiKey`, `cache`, `retry`
-- `httpOptions`: Passed to underlying HTTP client (got/ky)
+## When To Use What
 
-Additional methods: `mql.stream()`, `mql.buffer()`.
+- Need parsed page metadata -> use default request.
+- Need image capture -> `screenshot: true`.
+- Need downloadable PDF -> `pdf: true`.
+- Need specific DOM values -> `data` rules with CSS selectors.
+- Need direct asset URL response (no JSON) -> `embed`.
+- Need JS-dependent pages -> `prerender: true` or keep `auto`.
 
-### Error Handling
+## Response Shape
 
-```js
-const { MicrolinkError } = mql
-try {
-  const { data } = await mql('https://example.com', { screenshot: true })
-} catch (error) {
-  // error.status, error.code, error.message, error.statusCode
+Microlink uses JSend-style responses:
+
+```json
+{
+  "status": "success",
+  "data": {},
+  "message": "optional",
+  "more": "optional docs url"
 }
 ```
 
-### Client-Side Caching (Node.js only)
+- `status`: `success` (2xx), `fail` (4xx), `error` (5xx)
+- `data`: extracted output (`title`, `description`, `image`, `video`, and more)
 
-```js
-const cache = new Map()
-const { data } = await mql('https://example.com', { cache })
-// data.response.fromCache → true on second call
+## Common Workflows
+
+For copy-paste recipes, see [common-workflows/README.md](common-workflows/README.md).
+
+## MQL Usage Notes
+
+### Install
+
+```bash
+npm install @microlink/mql
 ```
 
-## Custom Data Extraction (Scraping)
+### Runtime imports
 
-Define rules with three primitives: **selector** (CSS), **attr** (what to extract), **type** (validation).
+- Node.js: `const mql = require('@microlink/mql')`
+- Edge/WinterCG: `import mql from '@microlink/mql/lightweight'`
+- Browser: `import mql from 'https://esm.sh/@microlink/mql'`
 
-### Single Field
+### Signature
+
+`mql(url, [options], [httpOptions])`
+
+- `url`: required target URL
+- `options`: Microlink parameters plus `apiKey`, `cache`, `retry`
+- `httpOptions`: forwarded to the underlying HTTP client
+
+Extra methods: `mql.stream()`, `mql.buffer()`.
+
+## Parameters At A Glance
+
+### Core
+
+- `url` (required): target URL with protocol
+- `meta` (default `true`): metadata extraction
+- `data`: custom scraping rules
+- `filter`: comma-separated output fields
+- `embed`: return one field directly as response body
+
+### Asset generation
+
+- `screenshot` / `screenshot.*`: create page image
+- `pdf` / `pdf.*`: create PDF
+- `video`, `audio`: detect playable sources
+
+### Browser behavior
+
+- `prerender`: `auto`, `true`, or `false`
+- `waitUntil`, `waitForSelector`, `waitForTimeout`, `timeout`
+- `device`, `viewport`, `javascript`, `animations`, `mediaType`
+- `click`, `scroll`, `scripts`, `modules`, `styles`
+
+### Caching and performance
+
+- `force`: bypass cache
+- `ttl` (Pro): cache lifetime
+- `staleTtl` (Pro): stale-while-revalidate strategy
+
+### Pro-only
+
+- `headers`, `proxy`, `filename`, `ttl`, `staleTtl`
+
+## Scraping Patterns
+
+### Single value
 
 ```js
-const { data } = await mql('https://kikobeats.com', {
-  data: {
-    avatar: { selector: '#avatar', type: 'image', attr: 'src' }
-  }
-})
+data: {
+  avatar: { selector: '#avatar', attr: 'src', type: 'image' }
+}
 ```
 
-### Multiple Fields
+### Collection
 
 ```js
-const { data } = await mql('https://news.ycombinator.com', {
-  data: {
-    headline: { selector: '.titleline > a', attr: 'text' },
-    link: { selector: '.titleline > a', attr: 'href', type: 'url' }
-  }
-})
+data: {
+  stories: { selectorAll: '.titleline > a', attr: 'text' }
+}
 ```
 
-### Collections (selectorAll)
-
-```js
-const { data } = await mql('https://news.ycombinator.com', {
-  data: {
-    stories: { selectorAll: '.titleline > a', attr: 'text' }
-  }
-})
-```
-
-### Fallback Rules
+### Fallback list
 
 ```js
 data: {
@@ -260,7 +143,7 @@ data: {
 }
 ```
 
-### Nested Rules
+### Nested object
 
 ```js
 data: {
@@ -274,25 +157,7 @@ data: {
 }
 ```
 
-### Whole-Page Serialization
-
-```js
-data: {
-  content: { attr: 'markdown' }  // omit selector for full page
-}
-```
-
-### attr Values
-
-Standard HTML attributes plus: `'html'`, `'outerHTML'`, `'text'`, `'markdown'`, `'val'`.
-
-### type Values
-
-`'auto'`, `'string'`, `'number'`, `'boolean'`, `'date'`, `'image'`, `'url'`, `'audio'`, `'video'`, `'email'`, `'author'`, `'publisher'`, `'title'`, `'description'`, `'lang'`, `'logo'`, `'object'`, `'regexp'`, `'ip'`.
-
-### evaluate
-
-Execute JS in browser context instead of CSS selectors:
+### Evaluate JS in browser context
 
 ```js
 data: {
@@ -300,15 +165,36 @@ data: {
 }
 ```
 
+## Error Handling
+
+```js
+const { MicrolinkError } = mql
+
+try {
+  const { data } = await mql('https://example.com', { screenshot: true })
+} catch (error) {
+  // error.status, error.code, error.message, error.statusCode
+}
+```
+
+Common error codes: `EAUTH`, `ERATE`, `EINVALURL`, `EBRWSRTIMEOUT`, `EPRO`, `ETIMEOUT`.
+
+## Security And Reliability Rules
+
+- Never expose `x-api-key` in client-side code.
+- Use `pro.microlink.io` for authenticated requests.
+- For frontend usage, use a server proxy (`microlinkhq/proxy` or `microlinkhq/edge-proxy`).
+- If a request is heavy and metadata is not needed, set `meta: false`.
+
 ## CLI
 
 ```bash
-npm install @microlink/cli --global
+npm install -g @microlink/cli
 microlink <url> [flags]
 ```
 
-Flags: `--api-key`, `--colors`, `--copy`, `--pretty`.
+Common flags: `--api-key`, `--pretty`, `--copy`, `--colors`.
 
-## Additional Resources
+## Deep Reference
 
-- For full API parameter reference, see [api-reference.md](api-reference.md)
+For complete parameter-by-parameter docs, full error matrix, and response headers, see [api-reference.md](api-reference.md).

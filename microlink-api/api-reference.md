@@ -1,6 +1,11 @@
 # Microlink API Parameter Reference
 
-Detailed reference for all Microlink API parameters. See SKILL.md for quick overview.
+Use this file as the deep reference.
+
+- For quick task-oriented guidance, start in `SKILL.md`.
+- For practical examples, use `common-workflows/README.md`.
+- For exact parameter behavior, defaults, and edge cases, use this file.
+- Parameter names accept both `camelCase` and `snake_case`.
 
 ## url (required)
 
