@@ -18,3 +18,33 @@ Retrieve user avatars from 20+ platforms (GitHub, X/Twitter, Instagram, Gravatar
 > `npx -y skills add microlinkhq/skills/k8s-hpa-cost-tuning`
 
 Tune Kubernetes HPA scale-up/down behavior, topology spread, and resource requests to reduce idle cluster capacity and ensure nodes can drain. This skill should be used when auditing cluster costs on a schedule, analyzing post-incident scaling behavior, or investigating why replicas or nodes do not scale down.
+
+### optimo
+
+> `npx -y skills add microlinkhq/skills/optimo`
+
+Optimize and convert images using `optimo` on top of ImageMagick. Use when the user mentions reducing image file size, image compression, batch optimization, converting image formats, or running `optimo` from scripts.
+
+### browserless
+
+> `npx -y skills add microlinkhq/skills/browserless`
+
+Automate websites with `browserless` and Puppeteer for screenshots, PDFs, HTML/text extraction, URL status checks, and Lighthouse audits. Use when the user mentions browserless, `@browserless/cli`, headless Chrome automation, Puppeteer wrappers, website screenshots, PDF generation from URLs, or extracting rendered page content.
+
+### metascraper
+
+> `npx -y skills add microlinkhq/skills/metascraper`
+
+Extract unified metadata from website HTML using `metascraper` rule bundles and fallbacks. Use when the user mentions metascraper, metadata extraction from URLs, Open Graph/Twitter Cards/JSON-LD parsing, custom metadata rules, or building link preview pipelines.
+
+### html-get
+
+> `npx -y skills add microlinkhq/skills/html-get`
+
+Retrieve normalized HTML from URLs using fetch or prerender with browserless fallbacks. Use when the user mentions `html-get`, rendered HTML extraction, JS-heavy pages, rewriting relative URLs, or preparing HTML for metascraper and scraping pipelines.
+
+### youtube-dl-exec
+
+> `npx -y skills add microlinkhq/skills/youtube-dl-exec`
+
+Run `yt-dlp` from Node.js using `youtube-dl-exec` for metadata extraction, media downloads, subtitle workflows, and subprocess control. Use when the user mentions `youtube-dl-exec`, `yt-dlp` automation, downloading media, or extracting structured video information.
