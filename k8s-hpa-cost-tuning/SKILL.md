@@ -55,9 +55,16 @@ Kubernetes scaling is a **three-layer system**:
 
 Key takeaway: HPA decides *quantity*, scheduler decides *placement*, autoscaler decides *cost*. Scale-up can be aggressive; scale-down must be **possible**. If replicas drop but nodes do not, the scheduler is the bottleneck.
 
-## Datadog formulas
+## Key Datadog metrics
 
-For CPU utilization, CPU reservation, and memory utilization queries, see [references/datadog-formulas.md](references/datadog-formulas.md).
+The utility scripts query three metric families:
+
+- **CPU used %** — real utilization (`kubernetes.cpu.usage.total` / `node.cpu_allocatable`)
+- **CPU requested %** — reserved on paper (`kubernetes.cpu.requests` / `node.cpu_allocatable`)
+- **Memory used vs requests** — HPA-relevant ratio
+
+> CPU requested % **must go down after scale-down** for cost savings to be real.
+> If memory usage stays above target, memory drives scale-up even when CPU is idle.
 
 ## Scale-down as a first-class cost control
 
@@ -171,3 +178,61 @@ kubectl -n <namespace> top pod --containers
 kubectl top node
 kubectl -n <namespace> get pods -o wide | sort -k7
 ```
+
+## Utility scripts
+
+Both scripts require Datadog credentials:
+
+```bash
+export DD_API_KEY=...
+export DD_APP_KEY=...
+export DD_SITE=datadoghq.com   # optional, defaults to datadoghq.com
+```
+
+### `audit-metrics.mjs` — Cost-savings discovery
+
+Scan a cluster over a wide window (default 24 h) to find over-reservation and waste.
+
+```bash
+# Cluster-wide audit
+node scripts/audit-metrics.mjs --cluster <cluster>
+
+# With deployment deep-dive
+node scripts/audit-metrics.mjs \
+  --cluster <cluster> \
+  --namespace <namespace> \
+  --deployment <deployment>
+```
+
+Reports:
+
+- **Cluster**: CPU/memory used %, requested %, and **waste %** (requested minus used)
+- **Deployment** (when provided): CPU/memory usage vs requests, HPA replica range
+- **Savings opportunities**: actionable recommendations based on thresholds
+
+### `incident-metrics.mjs` — Post-incident analysis
+
+Collect metrics for a narrow incident window and get a tuning recommendation.
+
+```bash
+node scripts/incident-metrics.mjs \
+  --cluster <cluster> \
+  --namespace <namespace> \
+  --deployment <deployment> \
+  --from <ISO8601> \
+  --to <ISO8601>
+```
+
+Reports:
+
+- **Cluster**: CPU used % and requested % of allocatable
+- **Deployment**: CPU/memory usage vs requests, unavailable %
+- **HPA**: current / desired / max replicas
+- **Capacity planning**: required allocatable cores for 80 % and 70 % reservation ceilings
+- **Tuning order**: step-by-step recommendation (one knob at a time)
+
+### Interpretation notes
+
+- Keep `limits.memory` unchanged unless OOMKills or near-limit memory usage are confirmed
+- Use `--out <path>` to save full JSON for deeper analysis or diffing across runs
+- Run `--help` on either script for all options (relative windows, custom HPA name, pretty JSON)
