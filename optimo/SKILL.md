@@ -1,11 +1,11 @@
 ---
 name: optimo
-description: Optimize and convert images using the optimo CLI and API on top of ImageMagick. Use when the user mentions reducing image size, image compression, batch image optimization, converting formats (jpeg/png/webp/avif/heic/jxl), resizing by percentage/dimensions/max-size, or running optimo in scripts.
+description: Optimize and convert images and videos using the optimo CLI and API on top of ImageMagick and FFmpeg. Use when the user mentions reducing media size, image/video compression, batch optimization, converting formats (jpeg/png/webp/avif/heic/jxl/mp4/webm/mov), resizing by percentage/dimensions/max-size, removing video audio tracks, or running optimo in scripts.
 ---
 
 # optimo
 
-`optimo` reduces image size with a format-specific compression pipeline.
+`optimo` reduces media size with format-specific compression pipelines.
 
 ## Prerequisites
 
@@ -17,6 +17,7 @@ Required by format:
 - SVG pipeline: `svgo`
 - JPEG second pass: `mozjpegtran` or `jpegtran`
 - GIF second pass: `gifsicle`
+- video pipeline: `ffmpeg`
 
 ## Quick Start (CLI)
 
@@ -53,6 +54,25 @@ npx -y optimo public/media/banner.png --format jpeg # long version
 npx -y optimo public/media/banner.png -f jpeg # short version
 ```
 
+Optimize a video:
+
+```bash
+npx -y optimo public/media/clip.mp4
+```
+
+Convert video format:
+
+```bash
+npx -y optimo public/media/clip.mov --format webm
+```
+
+Mute video audio tracks (default is already muted):
+
+```bash
+npx -y optimo public/media/clip.mp4 --mute # explicit true
+npx -y optimo public/media/clip.mp4 --mute false # keep audio
+```
+
 Resize by percentage:
 
 ```bash
@@ -60,7 +80,7 @@ npx -y optimo public/media/banner.png --resize 50% # long version
 npx -y optimo public/media/banner.png -r 50% # short version
 ```
 
-Resize to a target max file size:
+Resize to a target max file size (images only):
 
 ```bash
 npx -y optimo public/media/banner.png --resize 100kB # long version
@@ -96,12 +116,14 @@ npx -y optimo public/media/banner.heic -d -v # short version
 - `.svg` -> `svgo.svg`
 - `.jpg/.jpeg` -> `magick.jpg/jpeg` + `mozjpegtran.jpg/jpeg`
 - `.gif` -> `magick.gif` + `gifsicle.gif`
-- other formats (`webp`, `avif`, `heic`, `heif`, `jxl`, etc.) -> `magick.<format>`
+- other image formats (`webp`, `avif`, `heic`, `heif`, `jxl`, etc.) -> `magick.<format>`
+- video formats (`mp4`, `m4v`, `mov`, `webm`, `mkv`, `avi`, `ogv`) -> `ffmpeg.<format>`
 
 Mode behavior:
 
 - default: lossless-first pipeline
 - `--losy` / `-l`: lossy + lossless pass where supported
+- `--mute` / `-m`: remove audio tracks from videos (default: `true`; pass `--mute false` to keep audio)
 
 ## Recommended Workflow
 
@@ -109,15 +131,17 @@ Mode behavior:
 2. Run optimization on one file first, then scale to directories.
 3. Use `--format` only when conversion is intended.
 4. Use `--resize` only when explicit dimension/size control is required.
-5. Use `--verbose` when diagnosing unsupported files or binary/flag issues.
-6. Verify outputs in version control before committing.
+5. For videos, note `--resize 100kB` is not supported; use `50%`, `w960`, or `h480`.
+6. Use `--verbose` when diagnosing unsupported files or binary/flag issues.
+7. Verify outputs in version control before committing.
 
 ## CLI Options
 
 - `-d`, `--dry-run`: Show what would change without writing files.
 - `-f`, `--format`: Convert output format (`jpeg`, `webp`, `avif`, etc.).
 - `-l`, `--losy`: Enable lossy + lossless pass.
-- `-r`, `--resize`: Resize using percentage (`50%`), max file size (`100kB`), width (`w960`), or height (`h480`).
+- `-m`, `--mute`: Remove audio tracks from videos (default: `true`; use `--mute false` to keep audio).
+- `-r`, `--resize`: Resize using percentage (`50%`), max file size (`100kB`, images only), width (`w960`), or height (`h480`).
 - `-s`, `--silent`: Suppress per-file logs.
 - `-v`, `--verbose`: Print debug logs (pipeline selection, command execution, and errors).
 
@@ -144,6 +168,15 @@ await optimo.file('/absolute/path/image.jpg', {
   onLogs: console.log
 })
 
+await optimo.file('/absolute/path/video.mp4', {
+  losy: false,
+  // true by default for videos
+  mute: false,
+  format: 'webm',
+  resize: 'w1280',
+  onLogs: console.log
+})
+
 const result = await optimo.dir('/absolute/path/images')
 console.log(result)
 // { originalSize, optimizedSize, savings }
@@ -155,3 +188,4 @@ console.log(result)
 - During conversion, output uses the new extension and the original source file is removed (unless `--dry-run`).
 - Hidden files and folders (names starting with `.`) are skipped in directory mode.
 - Unsupported files are reported as `[unsupported]` and ignored.
+- Video defaults are tuned for web compatibility (`yuv420p`, fast-start MP4 where applicable).
