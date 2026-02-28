@@ -31,9 +31,9 @@ Optimize and convert images using `optimo` on top of ImageMagick. Use when the u
 
 Automate websites with `browserless` and Puppeteer for screenshots, PDFs, HTML/text extraction, URL status checks, and Lighthouse audits. Use when the user mentions browserless, `@browserless/cli`, headless Chrome automation, Puppeteer wrappers, website screenshots, PDF generation from URLs, or extracting rendered page content.
 
-### nodejs-resource-optimization
+### nodejs-performance
 
-> `npx -y skills add microlinkhq/skills/nodejs-resource-optimization`
+> `npx -y skills add microlinkhq/skills/nodejs-performance`
 
 Identify and ship production-safe performance and resource-usage fixes in Node.js codebases. Use when users ask to reduce CPU, memory, event-loop lag, I/O pressure, retry amplification, or to run one-PR-per-improvement optimization workflows with measurable benchmarks.
 
