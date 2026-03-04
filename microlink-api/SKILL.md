@@ -1,6 +1,6 @@
 ---
 name: microlink-api
-description: Uses Microlink API and MQL to extract metadata, screenshots, PDFs, and custom scraped data from URLs. Use when users mention Microlink, MQL, @microlink/mql, URL metadata extraction, screenshot or PDF generation from links, CSS selector scraping, or embed-based link previews.
+description: Extract metadata, take screenshots, generate PDFs, and scrape custom data from URLs via Microlink API and MQL. Use when users need to build link previews from URLs, capture web page screenshots or PDFs programmatically, scrape DOM elements with CSS selectors, or get structured data from any web page without managing browser infrastructure.
 ---
 
 # Microlink API

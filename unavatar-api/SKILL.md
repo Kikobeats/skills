@@ -1,6 +1,6 @@
 ---
 name: unavatar-api
-description: Retrieve user avatars from 20+ platforms (GitHub, X/Twitter, Instagram, Gravatar, etc.) via unavatar.io. Use when the user mentions unavatar, avatar retrieval, profile pictures, user avatars, or needs to resolve avatars by email, username, domain, or phone number.
+description: Resolve user avatars from 20+ platforms via a single API endpoint. Use when users need to display profile pictures from GitHub, X/Twitter, Instagram, or other platforms, look up avatars by email/username/domain/phone number, or add universal avatar resolution to user interfaces without integrating each provider individually.
 ---
 
 # unavatar API

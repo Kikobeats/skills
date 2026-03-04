@@ -1,6 +1,6 @@
 ---
 name: metascraper
-description: Extract unified metadata from input HTML using metascraper rule bundles and fallbacks. Use when the user mentions metascraper, metadata extraction from URLs, Open Graph/Twitter Cards/JSON-LD parsing, custom metadata rules, or building link preview pipelines.
+description: Extract structured metadata from HTML using composable rule bundles. Use when users need to build link previews, parse Open Graph/Twitter Cards/JSON-LD from pages, extract titles/descriptions/images/authors from HTML, or create metadata extraction pipelines with custom rules and provider-specific parsers.
 ---
 
 # metascraper

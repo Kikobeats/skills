@@ -1,6 +1,6 @@
 ---
 name: keyvhq
-description: Build and operate Keyv-based caching and key-value storage using @keyvhq/core and official adapters. Use when the user mentions Keyv, keyvhq, TTL cache, namespaces, storage adapters (Redis, Mongo, MySQL, PostgreSQL, SQLite, file), or adding cache support to a Node.js module.
+description: Build and operate key-value caching with @keyvhq/core and official storage adapters. Use when users need to add a cache layer to a Node.js module, store data with TTL expiration, choose between storage backends (in-memory, Redis, Mongo, MySQL, PostgreSQL, SQLite), implement cache-aside patterns with namespace isolation, or memoize function results.
 ---
 
 # keyvhq

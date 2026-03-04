@@ -1,6 +1,6 @@
 ---
 name: optimo
-description: Optimize and convert images and videos using the optimo CLI and API on top of ImageMagick and FFmpeg. Use when the user mentions reducing media size, image/video compression, batch optimization, converting formats (jpeg/png/webp/avif/heic/jxl/mp4/webm/mov), resizing by percentage/dimensions/max-size, removing video audio tracks, or running optimo in scripts.
+description: Optimize and convert images and videos using format-specific compression pipelines on top of ImageMagick and FFmpeg. Use when users need to reduce image or video file sizes, batch-optimize a media directory, convert between formats (JPEG, PNG, WebP, AVIF, HEIC, JXL, MP4, WebM, MOV), resize media by percentage/dimensions/target file size, or strip audio tracks from videos.
 ---
 
 # optimo

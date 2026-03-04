@@ -1,6 +1,6 @@
 ---
 name: browserless
-description: Automate websites with browserless and Puppeteer for screenshots, PDFs, HTML/text extraction, URL status checks, and Lighthouse audits. Use when the user mentions browserless, @browserless/cli, headless Chrome automation, Puppeteer wrappers, website screenshots, PDF generation from URLs, or extracting rendered page content.
+description: Automate headless Chrome with a high-level Puppeteer wrapper for screenshots, PDFs, and content extraction. Use when users need to capture web page screenshots or PDFs programmatically, extract rendered HTML or text from JavaScript-heavy pages, check URL status codes, run Lighthouse audits, or build reliable headless browser automation pipelines.
 ---
 
 # browserless
