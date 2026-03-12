@@ -1,11 +1,11 @@
 ---
 name: unavatar-api
-description: Resolve user avatars from 20+ platforms via a single API endpoint. Use when users need to display profile pictures from GitHub, X/Twitter, Instagram, or other platforms, look up avatars by email/username/domain/phone number, or add universal avatar resolution to user interfaces without integrating each provider individually.
+description: Resolve user avatars from 25+ platforms via a single API endpoint. Use when users need to display profile pictures from GitHub, X/Twitter, Instagram, Apple Music, or other platforms, look up avatars by email/username/domain/phone number, or add universal avatar resolution to user interfaces without integrating each provider individually.
 ---
 
 # unavatar API
 
-unavatar.io resolves user avatars from 20+ platforms via a single endpoint. Supports lookup by email, username, domain, or phone number.
+unavatar.io resolves user avatars from 25+ platforms via a single endpoint. Supports lookup by email, username, domain, or phone number.
 
 ## Endpoint
 
@@ -13,16 +13,14 @@ unavatar.io resolves user avatars from 20+ platforms via a single endpoint. Supp
 
 ## Quick Start
 
-Resolve avatars by input type:
+All lookups use the `/:provider/:key` format:
 
-| Input    | Pattern                      | Example                                         |
-| -------- | ---------------------------- | ----------------------------------------------- |
-| email    | `/provider/user@example.com` | `https://unavatar.io/gravatar/user@example.com` |
-| username | `/provider/username`         | `https://unavatar.io/github/kikobeats`          |
-| domain   | `/domain.com`                | `https://unavatar.io/microlink.io`              |
-| phone    | `/provider/phonenumber`      | `https://unavatar.io/whatsapp/34688638289`      |
-
-Without a provider prefix, unavatar auto-resolves using all matching providers and returns the fastest successful result.
+| Input    | Pattern                      | Example                                          |
+| -------- | ---------------------------- | ------------------------------------------------ |
+| email    | `/provider/user@example.com` | `https://unavatar.io/gravatar/hello@microlink.io` |
+| username | `/provider/username`         | `https://unavatar.io/github/kikobeats`           |
+| domain   | `/provider/domain.com`       | `https://unavatar.io/google/reddit.com`          |
+| phone    | `/provider/phonenumber`      | `https://unavatar.io/whatsapp/34612345678`       |
 
 ## Authentication
 
@@ -85,46 +83,99 @@ Returns JSON payload instead of image content.
 
 e.g., `https://unavatar.io/kikobeats?json`
 
-## Rate Limiting
+## Response Format
 
-Response headers:
+When `json=true` is passed, responses follow a predictable shape:
 
-- `x-rate-limit-limit`: Max requests per window
-- `x-rate-limit-remaining`: Remaining requests
-- `x-rate-limit-reset`: Reset time (UTC epoch seconds)
+| Field   | Type         | Present in                | Description                                     |
+| ------- | ------------ | ------------------------- | ----------------------------------------------- |
+| status  | string       | all JSON responses        | One of: `success`, `fail`, `error`.             |
+| message | string       | all JSON responses        | Human-readable summary for display/logging.     |
+| data    | object       | success                   | Response payload for successful requests.       |
+| code    | string       | fail, error               | Stable machine-readable error code.             |
+| more    | string (URL) | most fail/error responses | Documentation URL with troubleshooting details. |
+| report  | string       | some error responses      | Support contact channel (e.g., mailto:).        |
 
-HTTP 429 when limit exceeded.
+## Response Headers
+
+| Header                 | Purpose                                                 |
+| ---------------------- | ------------------------------------------------------- |
+| x-pricing-tier         | `free` or `pro` — the plan used for this request        |
+| x-timestamp            | Server timestamp when request was received              |
+| x-unavatar-cost        | Token cost of the request (avatar routes only)          |
+| x-proxy-tier           | Proxy tier used: `origin`, `datacenter`, or `residential` |
+| x-rate-limit-limit     | Maximum requests allowed per window (free tier only)    |
+| x-rate-limit-remaining | Remaining requests in current window (free tier only)   |
+| x-rate-limit-reset     | UTC epoch seconds when window resets (free tier only)   |
+| retry-after            | Seconds until rate limit resets (only on 429 responses) |
+
+## Response Errors
+
+Client-side issues return `status: "fail"` (HTTP 4xx). Service-side issues return `status: "error"` (HTTP 5xx).
+
+| HTTP | Code               | Typical trigger                           |
+| ---- | ------------------ | ----------------------------------------- |
+| 400  | ESESSIONID         | Missing session_id in /checkout/success   |
+| 400  | ESESSION           | Checkout session not paid or not found    |
+| 400  | ESIGNATURE         | Missing stripe-signature header           |
+| 400  | EWEBHOOK           | Invalid/failed Stripe webhook processing  |
+| 400  | EAPIKEYVALUE       | Missing apiKey query parameter            |
+| 400  | EAPIKEYLABEL       | Missing label query parameter             |
+| 401  | EEMAIL             | Invalid or missing authenticated email    |
+| 401  | EUSERUNAUTHORIZED  | Missing/invalid auth for protected routes |
+| 401  | EAPIKEY            | Invalid x-api-key                         |
+| 403  | ETTL               | Custom ttl requested without pro plan     |
+| 403  | EPRO               | Provider restricted to pro plan           |
+| 404  | ENOTFOUND          | Route not found                           |
+| 404  | EAPIKEYNOTFOUND    | API key not found                         |
+| 409  | EAPIKEYEXISTS      | Custom API key already exists             |
+| 409  | EAPIKEYLABELEXISTS | API key label already exists              |
+| 409  | EAPIKEYMIN         | Attempt to remove last remaining key      |
+| 429  | ERATE              | Free-tier daily rate limit exceeded       |
+| 500  | ECHECKOUT          | Stripe checkout session creation failed   |
+| 500  | EAPIKEYFAILED      | API key retrieval after checkout failed   |
+| 500  | EINTERNAL          | Unexpected internal server failure        |
 
 ## Providers
 
-Providers are grouped by input type. When no specific provider is given, all matching providers race and the fastest successful result wins.
+Providers are grouped by input type.
 
-| Provider   | email | username | domain | phone |
-| ---------- | :---: | :------: | :----: | :---: |
-| Bluesky    |       |    ✓     |        |       |
-| DeviantArt |       |    ✓     |        |       |
-| Dribbble   |       |    ✓     |        |       |
-| DuckDuckGo |       |          |   ✓    |       |
-| GitHub     |       |    ✓     |        |       |
-| GitLab     |       |    ✓     |        |       |
-| Google     |       |          |   ✓    |       |
-| Gravatar   |   ✓   |          |        |       |
-| Instagram  |       |    ✓     |        |       |
-| Microlink  |       |          |   ✓    |       |
-| OnlyFans   |       |    ✓     |        |       |
-| Reddit     |       |    ✓     |        |       |
-| SoundCloud |       |    ✓     |        |       |
-| Spotify    |       |    ✓     |        |       |
-| Substack   |       |    ✓     |        |       |
-| Telegram   |       |    ✓     |        |       |
-| TikTok     |       |    ✓     |        |       |
-| Twitch     |       |    ✓     |        |       |
-| Vimeo      |       |    ✓     |        |       |
-| WhatsApp   |       |          |        |   ✓   |
-| X/Twitter  |       |    ✓     |        |       |
-| YouTube    |       |    ✓     |        |       |
+| Provider      | email | username | domain | phone |
+| ------------- | :---: | :------: | :----: | :---: |
+| Apple Music   |       |    ✓     |        |       |
+| Bluesky       |       |    ✓     |        |       |
+| DeviantArt    |       |    ✓     |        |       |
+| Dribbble      |       |    ✓     |        |       |
+| DuckDuckGo    |       |          |   ✓    |       |
+| GitHub        |       |    ✓     |        |       |
+| GitLab        |       |    ✓     |        |       |
+| Google        |       |          |   ✓    |       |
+| Gravatar      |   ✓   |          |        |       |
+| Instagram     |       |    ✓     |        |       |
+| Microlink     |       |          |   ✓    |       |
+| OnlyFans      |       |    ✓     |        |       |
+| OpenStreetMap |       |    ✓     |        |       |
+| Patreon       |       |    ✓     |        |       |
+| Reddit        |       |    ✓     |        |       |
+| SoundCloud    |       |    ✓     |        |       |
+| Spotify       |       |    ✓     |        |       |
+| Substack      |       |    ✓     |        |       |
+| Telegram      |       |    ✓     |        |       |
+| TikTok        |       |    ✓     |        |       |
+| Twitch        |       |    ✓     |        |       |
+| Vimeo         |       |    ✓     |        |       |
+| WhatsApp      |       |          |        |   ✓   |
+| X/Twitter     |       |    ✓     |        |       |
+| YouTube       |       |    ✓     |        |       |
 
 ### URI Format Providers
+
+**Apple Music** supports `type:id` format. Without explicit type, it searches `artist` then `song`:
+
+- by name: `/apple-music/daft%20punk`
+- `artist`: `/apple-music/artist:daft%20punk` or `/apple-music/artist:5468295`
+- `album`: `/apple-music/album:discovery` or `/apple-music/album:78691923`
+- `song`: `/apple-music/song:harder%20better%20faster%20stronger` or `/apple-music/song:697195787`
 
 **Spotify** supports `type:id` format (default type: `user`):
 
@@ -142,5 +193,10 @@ Providers are grouped by input type. When no specific provider is given, all mat
 - `channel`: `/whatsapp/channel:0029VaABC1234abcDEF56789`
 - `chat`: `/whatsapp/chat:ABC1234DEFghi`
 - `group`: `/whatsapp/group:ABC1234DEFghi`
+
+**YouTube** accepts handle, legacy username, or channel ID. Input starting with `UC` and 24 characters long is treated as a channel ID:
+
+- handle: `/youtube/casey` or `/youtube/@casey`
+- channel ID: `/youtube/UC_x5XG1OV2P6uZZ5FSM9Ttw`
 
 For individual provider examples, see [providers.md](providers.md).
