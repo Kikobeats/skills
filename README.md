@@ -1,6 +1,18 @@
 # skills
 
 
+### use-pnpm
+
+> `npx -y skills add microlinkhq/skills/use-pnpm`
+
+Always use `pnpm` as the package manager. Use when installing, adding, or removing dependencies, running scripts, or any npm/yarn/pnpm command. Replaces npm and yarn with pnpm equivalents.
+
+### microlink-google
+
+> `npx -y skills add microlinkhq/skills/microlink-google`
+
+Query 10 Google verticals (search, news, images, videos, places, maps, shopping, scholar, patents, autocomplete) as structured data via `@microlink/google`. Use when users need to fetch Google search results programmatically, scrape Google SERP data, build search-powered features, retrieve Google News or Shopping data, get place/map coordinates, find academic papers, or work with any Google vertical through a unified Node.js API.
+
 ### microlink-api
 
 > `npx -y skills add microlinkhq/skills/microlink-api`
