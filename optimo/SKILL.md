@@ -1,6 +1,6 @@
 ---
 name: optimo
-description: Optimize and convert images and videos using format-specific compression pipelines on top of ImageMagick and FFmpeg. Use when users need to reduce image or video file sizes, batch-optimize a media directory, convert between formats (JPEG, PNG, WebP, AVIF, HEIC, JXL, MP4, WebM, MOV), resize media by percentage/dimensions/target file size, or strip audio tracks from videos.
+description: Optimize and convert images and videos using format-specific compression pipelines on top of ImageMagick and FFmpeg. Use when users need to reduce image or video file sizes, batch-optimize a media directory, convert between formats (JPEG, PNG, WebP, AVIF, HEIC, JXL, MP4, WebM, MOV), resize media by percentage/dimensions/target file size, strip audio tracks from videos, or output optimized images as data URLs.
 ---
 
 # optimo
@@ -101,6 +101,13 @@ npx -y optimo public/media/banner.png --resize h480 # long version
 npx -y optimo public/media/banner.png -r h480 # short version
 ```
 
+Output optimized image as data URL (single image file only):
+
+```bash
+npx -y optimo public/media/banner.png --data-url # long version
+npx -y optimo public/media/banner.png -u # short version
+```
+
 Enable verbose debugging:
 
 ```bash
@@ -114,7 +121,7 @@ npx -y optimo public/media/banner.heic -d -v # short version
 
 - `.png` -> `magick.png`
 - `.svg` -> `svgo.svg`
-- `.jpg/.jpeg` -> `magick.jpg/jpeg` + `mozjpegtran.jpg/jpeg`
+- `.jpg/.jpeg` -> `magick.jpg/jpeg` + `mozjpegtran.jpg/jpeg` (lossless JPEG without resize or conversion skips magick and runs only mozjpegtran)
 - `.gif` -> `magick.gif` + `gifsicle.gif`
 - other image formats (`webp`, `avif`, `heic`, `heif`, `jxl`, etc.) -> `magick.<format>`
 - video formats (`mp4`, `m4v`, `mov`, `webm`, `mkv`, `avi`, `ogv`) -> `ffmpeg.<format>`
@@ -143,6 +150,7 @@ Mode behavior:
 - `-m`, `--mute`: Remove audio tracks from videos (default: `true`; use `--mute false` to keep audio).
 - `-r`, `--resize`: Resize using percentage (`50%`), max file size (`100kB`, images only), width (`w960`), or height (`h480`).
 - `-s`, `--silent`: Suppress per-file logs.
+- `-u`, `--data-url`: Return optimized image as data URL (single image file only).
 - `-v`, `--verbose`: Print debug logs (pipeline selection, command execution, and errors).
 
 ## Programmatic API
@@ -168,10 +176,15 @@ await optimo.file('/absolute/path/image.jpg', {
   onLogs: console.log
 })
 
+const { dataUrl } = await optimo.file('/absolute/path/image.png', {
+  dataUrl: true,
+  onLogs: console.log
+})
+// dataUrl is a base64 data URL string (images only, single file)
+
 await optimo.file('/absolute/path/video.mp4', {
   losy: false,
-  // true by default for videos
-  mute: false,
+  mute: false, // true by default for videos
   format: 'webm',
   resize: 'w1280',
   onLogs: console.log
@@ -180,6 +193,10 @@ await optimo.file('/absolute/path/video.mp4', {
 const result = await optimo.dir('/absolute/path/images')
 console.log(result)
 // { originalSize, optimizedSize, savings }
+
+// Utility export
+const { formatBytes } = require('optimo')
+console.log(formatBytes(1024)) // '1 kB'
 ```
 
 ## Behavior Notes
@@ -189,3 +206,4 @@ console.log(result)
 - Hidden files and folders (names starting with `.`) are skipped in directory mode.
 - Unsupported files are reported as `[unsupported]` and ignored.
 - Video defaults are tuned for web compatibility (`yuv420p`, fast-start MP4 where applicable).
+- `--data-url` is only supported for single image files (throws for videos or directory mode).
