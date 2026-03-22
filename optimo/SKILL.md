@@ -33,6 +33,13 @@ Optimize a single file:
 npx -y optimo public/media/banner.png
 ```
 
+Preserve image EXIF metadata:
+
+```bash
+npx -y optimo public/media/banner.jpg --preserve-exif # long version
+npx -y optimo public/media/banner.jpg -p # short version
+```
+
 Run a dry run (no file changes):
 
 ```bash
@@ -43,7 +50,7 @@ npx -y optimo public/media/banner.png -d # short version
 Enable lossy mode:
 
 ```bash
-npx -y optimo public/media/banner.jpg --losy # long version
+npx -y optimo public/media/banner.jpg --lossy # long version
 npx -y optimo public/media/banner.jpg -l # short version
 ```
 
@@ -129,8 +136,10 @@ npx -y optimo public/media/banner.heic -d -v # short version
 Mode behavior:
 
 - default: lossless-first pipeline
-- `--losy` / `-l`: lossy + lossless pass where supported
+- default image behavior strips metadata/EXIF for smaller files
+- `--lossy` / `-l`: lossy + lossless pass where supported
 - `--mute` / `-m`: remove audio tracks from videos (default: `true`; pass `--mute false` to keep audio)
+- `--preserve-exif` / `-p`: keep image EXIF metadata in outputs
 
 ## Recommended Workflow
 
@@ -146,8 +155,9 @@ Mode behavior:
 
 - `-d`, `--dry-run`: Show what would change without writing files.
 - `-f`, `--format`: Convert output format (`jpeg`, `webp`, `avif`, etc.).
-- `-l`, `--losy`: Enable lossy + lossless pass.
+- `-l`, `--lossy`: Enable lossy + lossless pass.
 - `-m`, `--mute`: Remove audio tracks from videos (default: `true`; use `--mute false` to keep audio).
+- `-p`, `--preserve-exif`: Preserve image EXIF metadata (default: `false`).
 - `-r`, `--resize`: Resize using percentage (`50%`), max file size (`100kB`, images only), width (`w960`), or height (`h480`).
 - `-s`, `--silent`: Suppress per-file logs.
 - `-u`, `--data-url`: Return optimized image as data URL (single image file only).
@@ -160,9 +170,15 @@ const optimo = require('optimo')
 
 await optimo.file('/absolute/path/image.jpg', {
   dryRun: false,
-  losy: false,
+  lossy: false,
+  preserveExif: false, // default
   format: 'webp',
   resize: '50%',
+  onLogs: console.log
+})
+
+await optimo.file('/absolute/path/image.jpg', {
+  preserveExif: true, // keep EXIF metadata
   onLogs: console.log
 })
 
@@ -183,7 +199,7 @@ const { dataUrl } = await optimo.file('/absolute/path/image.png', {
 // dataUrl is a base64 data URL string (images only, single file)
 
 await optimo.file('/absolute/path/video.mp4', {
-  losy: false,
+  lossy: false,
   mute: false, // true by default for videos
   format: 'webm',
   resize: 'w1280',
@@ -206,4 +222,5 @@ console.log(formatBytes(1024)) // '1 kB'
 - Hidden files and folders (names starting with `.`) are skipped in directory mode.
 - Unsupported files are reported as `[unsupported]` and ignored.
 - Video defaults are tuned for web compatibility (`yuv420p`, fast-start MP4 where applicable).
+- Image outputs strip EXIF metadata by default; use `--preserve-exif` or `preserveExif: true` to keep it.
 - `--data-url` is only supported for single image files (throws for videos or directory mode).

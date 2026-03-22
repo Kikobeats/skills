@@ -35,7 +35,7 @@ Tune Kubernetes HPA scale-up/down behavior, topology spread, and resource reques
 
 > `npx -y skills add microlinkhq/skills/optimo`
 
-Optimize and convert images using `optimo` on top of ImageMagick. Use when the user mentions reducing image file size, image compression, batch optimization, converting image formats, or running `optimo` from scripts.
+Optimize and convert images and videos using `optimo` on top of ImageMagick & FFmpeg. Use when the user mentions reducing image/video file size, media compression, batch optimization, converting media formats, or running `optimo` from scripts.
 
 ### browserless
 
