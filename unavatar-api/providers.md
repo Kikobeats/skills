@@ -15,6 +15,12 @@ Get artwork for any Apple Music artist, album, or song. Search by name or look u
 | album  | `https://unavatar.io/apple-music/album:discovery` or `album:78691923`        |
 | song   | `https://unavatar.io/apple-music/song:harder%20better%20faster%20stronger` or `song:697195787` |
 
+### Behance
+
+Resolves against **behance.net**.
+
+e.g., `https://unavatar.io/behance/vitormatosinhos`
+
 ### Bluesky
 
 Resolves against **bsky.app**. Domain-style handles are supported.
@@ -27,6 +33,13 @@ e.g., `https://unavatar.io/bluesky/bsky.app`
 Resolves against **deviantart.com**.
 
 e.g., `https://unavatar.io/deviantart/spyed`
+
+### Discord
+
+Resolves against **discord.com**. Get a Discord server's icon by server name or server ID.
+
+e.g., `https://unavatar.io/discord/lilnasx`
+e.g., `https://unavatar.io/discord/uW6Hyf3E9r`
 
 ### Dribbble
 
@@ -54,6 +67,33 @@ Resolves against **instagram.com**. No authentication or API tokens needed.
 
 e.g., `https://unavatar.io/instagram/willsmith`
 
+### Ko-fi
+
+Resolves against **ko-fi.com**.
+
+e.g., `https://unavatar.io/ko-fi/geekshock`
+
+### LinkedIn
+
+Resolves against **linkedin.com**. Supports `type:id` URI format (default: `user`).
+
+| Type    | Example                                            |
+| ------- | -------------------------------------------------- |
+| user    | `https://unavatar.io/linkedin/user:wesbos`         |
+| company | `https://unavatar.io/linkedin/company:microlinkhq` |
+
+### Mastodon
+
+Resolves against any Mastodon instance via the public account lookup API. Pass the handle as `user@server`.
+
+e.g., `https://unavatar.io/mastodon/kpwags@hachyderm.io`
+
+### Medium
+
+Resolves against **medium.com**.
+
+e.g., `https://unavatar.io/medium/juancalmaraz`
+
 ### OnlyFans
 
 Resolves against **onlyfans.com**.
@@ -71,13 +111,31 @@ e.g., `https://unavatar.io/openstreetmap/Terence%20Eden`
 
 Resolves against **patreon.com**.
 
-e.g., `https://unavatar.io/patreon/kikobeats`
+e.g., `https://unavatar.io/patreon/gametestro`
+
+### Pinterest
+
+Resolves against **pinterest.com**.
+
+e.g., `https://unavatar.io/pinterest/ohjoy`
+
+### Printables
+
+Resolves against **printables.com**.
+
+e.g., `https://unavatar.io/printables/DukeDoks`
 
 ### Reddit
 
 Resolves against **reddit.com**.
 
 e.g., `https://unavatar.io/reddit/kikobeats`
+
+### Snapchat
+
+Resolves against **snapchat.com**.
+
+e.g., `https://unavatar.io/snapchat/teddysdaytoday`
 
 ### SoundCloud
 
@@ -92,12 +150,12 @@ Resolves against **open.spotify.com**. Supports `type:id` URI format (default: `
 | Type     | Example                                                       |
 | -------- | ------------------------------------------------------------- |
 | user     | `https://unavatar.io/spotify/kikobeats`                       |
-| artist   | `https://unavatar.io/spotify/artist:6sFIWsNpZYqbRiDnNOkZCA`  |
-| playlist | `https://unavatar.io/spotify/playlist:37i9dQZF1DXcBWIGoYBM5M` |
-| album    | `https://unavatar.io/spotify/album:4aawyAB9vmqN3uQ7FjRGTy`   |
-| show     | `https://unavatar.io/spotify/show:6UCtBYL29hRg064d4i5W2i`    |
-| episode  | `https://unavatar.io/spotify/episode:512ojhOuo1ktJprKbVcKyQ`  |
-| track    | `https://unavatar.io/spotify/track:11dFghVXANMlKmJXsNCbNl`   |
+| artist   | `https://unavatar.io/spotify/artist:1vCWHaC5f2uS3yhpwWbIA6`  |
+| playlist | `https://unavatar.io/spotify/playlist:37i9dQZF1DZ06evO3KIUZW` |
+| album    | `https://unavatar.io/spotify/album:7I9Wh2IgvI3Nnr8Z1ZSWby`   |
+| show     | `https://unavatar.io/spotify/show:0iykbhPkRz53QF8LR2UyNO`    |
+| episode  | `https://unavatar.io/spotify/episode:1YNm34Q8ofC2CDTYYLaFMj`  |
+| track    | `https://unavatar.io/spotify/track:4OROzZUy6gOWN4UGQVaZMF`   |
 
 ### Substack
 
@@ -110,6 +168,12 @@ e.g., `https://unavatar.io/substack/bankless`
 Resolves against **telegram.com**.
 
 e.g., `https://unavatar.io/telegram/drsdavidsoft`
+
+### Threads
+
+Resolves against **threads.net**.
+
+e.g., `https://unavatar.io/threads/zuck`
 
 ### TikTok
 
@@ -127,7 +191,16 @@ e.g., `https://unavatar.io/twitch/midudev`
 
 Resolves against **vimeo.com**.
 
-e.g., `https://unavatar.io/vimeo/staff`
+e.g., `https://unavatar.io/vimeo/ladieswithlenses`
+
+### WhatsApp
+
+Resolves against **whatsapp.com**. Supports `type:id` URI format.
+
+| Type    | Example                                                            |
+| ------- | ------------------------------------------------------------------ |
+| channel | `https://unavatar.io/whatsapp/channel:0029VaARuQ7KwqSXh9fiMc0m`   |
+| chat    | `https://unavatar.io/whatsapp/chat:D2FFycjQXrEIKG8qQjbwZz`        |
 
 ### X/Twitter
 
@@ -140,7 +213,6 @@ e.g., `https://unavatar.io/x/kikobeats`
 Resolves against **youtube.com**. Accepts handle, legacy username, or channel ID. Input starting with `UC` and 24 characters long is treated as a channel ID.
 
 e.g., `https://unavatar.io/youtube/casey`
-e.g., `https://unavatar.io/youtube/@casey`
 e.g., `https://unavatar.io/youtube/UC_x5XG1OV2P6uZZ5FSM9Ttw`
 
 ## Email Providers
@@ -157,29 +229,16 @@ e.g., `https://unavatar.io/gravatar/hello@microlink.io`
 
 Resolves using **duckduckgo.com**. Useful as a fallback when a domain doesn't expose its favicon directly.
 
-e.g., `https://unavatar.io/duckduckgo/gummibeer.dev`
+e.g., `https://unavatar.io/duckduckgo/microsoft.com`
 
 ### Google
 
 Resolves using **google.com**.
 
-e.g., `https://unavatar.io/google/netflix.com`
+e.g., `https://unavatar.io/google/stremio.com`
 
 ### Microlink
 
 Extracts the logo or representative image from any URL. The page is rendered and the best available image is selected.
 
 e.g., `https://unavatar.io/microlink/microlink.io`
-
-## Phone Providers
-
-### WhatsApp
-
-Resolves against **whatsapp.com**. Supports `type:id` URI format (default: `phone`).
-
-| Type    | Example                                                         |
-| ------- | --------------------------------------------------------------- |
-| phone   | `https://unavatar.io/whatsapp/34612345678`                      |
-| channel | `https://unavatar.io/whatsapp/channel:0029VaABC1234abcDEF56789` |
-| chat    | `https://unavatar.io/whatsapp/chat:ABC1234DEFghi`               |
-| group   | `https://unavatar.io/whatsapp/group:ABC1234DEFghi`              |

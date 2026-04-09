@@ -1,11 +1,11 @@
 ---
 name: unavatar-api
-description: Resolve user avatars from 25+ platforms via a single API endpoint. Use when users need to display profile pictures from GitHub, X/Twitter, Instagram, Apple Music, or other platforms, look up avatars by email/username/domain/phone number, or add universal avatar resolution to user interfaces without integrating each provider individually.
+description: Resolve user avatars from 35+ platforms via a single API endpoint. Use when users need to display profile pictures from GitHub, X/Twitter, Instagram, Apple Music, or other platforms, look up avatars by email/username/domain, or add universal avatar resolution to user interfaces without integrating each provider individually.
 ---
 
 # unavatar API
 
-unavatar.io resolves user avatars from 25+ platforms via a single endpoint. Supports lookup by email, username, domain, or phone number.
+unavatar.io resolves user avatars from 35+ platforms via a single endpoint. Supports lookup by email, username, or domain.
 
 ## Endpoint
 
@@ -20,7 +20,6 @@ All lookups use the `/:provider/:key` format:
 | email    | `/provider/user@example.com` | `https://unavatar.io/gravatar/hello@microlink.io` |
 | username | `/provider/username`         | `https://unavatar.io/github/kikobeats`           |
 | domain   | `/provider/domain.com`       | `https://unavatar.io/google/reddit.com`          |
-| phone    | `/provider/phonenumber`      | `https://unavatar.io/whatsapp/34612345678`       |
 
 ## Authentication
 
@@ -140,33 +139,43 @@ Client-side issues return `status: "fail"` (HTTP 4xx). Service-side issues retur
 
 Providers are grouped by input type.
 
-| Provider      | email | username | domain | phone |
-| ------------- | :---: | :------: | :----: | :---: |
-| Apple Music   |       |    ✓     |        |       |
-| Bluesky       |       |    ✓     |        |       |
-| DeviantArt    |       |    ✓     |        |       |
-| Dribbble      |       |    ✓     |        |       |
-| DuckDuckGo    |       |          |   ✓    |       |
-| GitHub        |       |    ✓     |        |       |
-| GitLab        |       |    ✓     |        |       |
-| Google        |       |          |   ✓    |       |
-| Gravatar      |   ✓   |          |        |       |
-| Instagram     |       |    ✓     |        |       |
-| Microlink     |       |          |   ✓    |       |
-| OnlyFans      |       |    ✓     |        |       |
-| OpenStreetMap |       |    ✓     |        |       |
-| Patreon       |       |    ✓     |        |       |
-| Reddit        |       |    ✓     |        |       |
-| SoundCloud    |       |    ✓     |        |       |
-| Spotify       |       |    ✓     |        |       |
-| Substack      |       |    ✓     |        |       |
-| Telegram      |       |    ✓     |        |       |
-| TikTok        |       |    ✓     |        |       |
-| Twitch        |       |    ✓     |        |       |
-| Vimeo         |       |    ✓     |        |       |
-| WhatsApp      |       |          |        |   ✓   |
-| X/Twitter     |       |    ✓     |        |       |
-| YouTube       |       |    ✓     |        |       |
+| Provider      | email | username | domain |
+| ------------- | :---: | :------: | :----: |
+| Apple Music   |       |    ✓     |        |
+| Behance       |       |    ✓     |        |
+| Bluesky       |       |    ✓     |        |
+| DeviantArt    |       |    ✓     |        |
+| Discord       |       |    ✓     |        |
+| Dribbble      |       |    ✓     |        |
+| DuckDuckGo    |       |          |   ✓    |
+| GitHub        |       |    ✓     |        |
+| GitLab        |       |    ✓     |        |
+| Google        |       |          |   ✓    |
+| Gravatar      |   ✓   |          |        |
+| Instagram     |       |    ✓     |        |
+| Ko-fi         |       |    ✓     |        |
+| LinkedIn      |       |    ✓     |        |
+| Mastodon      |       |    ✓     |        |
+| Medium        |       |    ✓     |        |
+| Microlink     |       |          |   ✓    |
+| OnlyFans      |       |    ✓     |        |
+| OpenStreetMap |       |    ✓     |        |
+| Patreon       |       |    ✓     |        |
+| Pinterest     |       |    ✓     |        |
+| Printables    |       |    ✓     |        |
+| Reddit        |       |    ✓     |        |
+| Snapchat      |       |    ✓     |        |
+| SoundCloud    |       |    ✓     |        |
+| Spotify       |       |    ✓     |        |
+| Substack      |       |    ✓     |        |
+| Telegram      |       |    ✓     |        |
+| Threads       |       |    ✓     |        |
+| TikTok        |       |    ✓     |        |
+| Twitch        |       |    ✓     |        |
+| Vimeo         |       |    ✓     |        |
+| WhatsApp      |       |    ✓     |        |
+| X/Twitter     |       |    ✓     |        |
+| YouTube       |       |    ✓     |        |
 
 ### URI Format Providers
 
@@ -187,16 +196,19 @@ Providers are grouped by input type.
 - `episode`: `/spotify/episode:512ojhOuo1ktJprKbVcKyQ`
 - `track`: `/spotify/track:11dFghVXANMlKmJXsNCbNl`
 
-**WhatsApp** supports `type:id` format (default type: `phone`):
+**LinkedIn** supports `type:id` format (default type: `user`):
 
-- `phone`: `/whatsapp/34612345678`
-- `channel`: `/whatsapp/channel:0029VaABC1234abcDEF56789`
-- `chat`: `/whatsapp/chat:ABC1234DEFghi`
-- `group`: `/whatsapp/group:ABC1234DEFghi`
+- `user`: `/linkedin/user:wesbos`
+- `company`: `/linkedin/company:microlinkhq`
+
+**WhatsApp** supports `type:id` format:
+
+- `channel`: `/whatsapp/channel:0029VaARuQ7KwqSXh9fiMc0m`
+- `chat`: `/whatsapp/chat:D2FFycjQXrEIKG8qQjbwZz`
 
 **YouTube** accepts handle, legacy username, or channel ID. Input starting with `UC` and 24 characters long is treated as a channel ID:
 
-- handle: `/youtube/casey` or `/youtube/@casey`
+- handle: `/youtube/casey`
 - channel ID: `/youtube/UC_x5XG1OV2P6uZZ5FSM9Ttw`
 
 For individual provider examples, see [providers.md](providers.md).
