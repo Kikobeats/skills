@@ -1,11 +1,11 @@
 ---
 name: unavatar-api
-description: Resolve user avatars from 35+ platforms via a single API endpoint. Use when users need to display profile pictures from GitHub, X/Twitter, Instagram, Apple Music, or other platforms, look up avatars by email/username/domain, or add universal avatar resolution to user interfaces without integrating each provider individually.
+description: Resolve user avatars from 40+ platforms via a single API endpoint. Use when users need to display profile pictures from GitHub, X/Twitter, Instagram, Apple Music, or other platforms, look up avatars by email/username/domain, or add universal avatar resolution to user interfaces without integrating each provider individually.
 ---
 
 # unavatar API
 
-unavatar.io resolves user avatars from 35+ platforms via a single endpoint. Supports lookup by email, username, or domain.
+unavatar.io resolves user avatars from 40+ platforms via a single endpoint. Supports lookup by email, username, or domain. For email-shaped input with no provider prefix, the API auto-resolves in order: **Gravatar**, then **GitHub**.
 
 ## Endpoint
 
@@ -13,13 +13,15 @@ unavatar.io resolves user avatars from 35+ platforms via a single endpoint. Supp
 
 ## Quick Start
 
-All lookups use the `/:provider/:key` format:
-
 | Input    | Pattern                      | Example                                          |
 | -------- | ---------------------------- | ------------------------------------------------ |
-| email    | `/provider/user@example.com` | `https://unavatar.io/gravatar/hello@microlink.io` |
+| email (auto) | `/user@example.com`      | `https://unavatar.io/hello@microlink.io` (Gravatar → GitHub) |
+| email    | `/gravatar/user@example.com` | `https://unavatar.io/gravatar/hello@microlink.io` |
+| email    | `/github/user@example.com` | `https://unavatar.io/github/sindresorhus@gmail.com` |
 | username | `/provider/username`         | `https://unavatar.io/github/kikobeats`           |
 | domain   | `/provider/domain.com`       | `https://unavatar.io/google/reddit.com`          |
+
+Use `/:provider/:key` for a specific provider, or pass an email as the only path segment for automatic resolution. Details: [unavatar.io/email](https://unavatar.io/email).
 
 ## Authentication
 
@@ -148,7 +150,7 @@ Providers are grouped by input type.
 | Discord       |       |    ✓     |        |
 | Dribbble      |       |    ✓     |        |
 | DuckDuckGo    |       |          |   ✓    |
-| GitHub        |       |    ✓     |        |
+| GitHub        |   ✓   |    ✓     |        |
 | GitLab        |       |    ✓     |        |
 | Google        |       |          |   ✓    |
 | Gravatar      |   ✓   |          |        |

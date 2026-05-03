@@ -49,10 +49,11 @@ e.g., `https://unavatar.io/dribbble/omidnikrah`
 
 ### GitHub
 
-Resolves against **github.com**. Works with users and organizations.
+Resolves against **github.com**. Works with users and organizations. When the key is an **email**, uses GitHub search to match a public profile email or infer the most likely account from commit history.
 
 e.g., `https://unavatar.io/github/mdo`
 e.g., `https://unavatar.io/github/vercel`
+e.g., `https://unavatar.io/github/sindresorhus@gmail.com`
 
 ### GitLab
 
@@ -222,6 +223,14 @@ e.g., `https://unavatar.io/youtube/UC_x5XG1OV2P6uZZ5FSM9Ttw`
 Resolves against **gravatar.com**.
 
 e.g., `https://unavatar.io/gravatar/hello@microlink.io`
+
+### GitHub
+
+Same route as username lookups: `/github/:key`. With an email as `key`, resolves when the address matches public GitHub data (see GitHub section above).
+
+e.g., `https://unavatar.io/github/sindresorhus@gmail.com`
+
+**Auto email** (no provider prefix): `https://unavatar.io/hello@microlink.io` tries Gravatar first, then GitHub.
 
 ## Domain Providers
 
